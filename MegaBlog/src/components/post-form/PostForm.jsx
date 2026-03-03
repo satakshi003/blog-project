@@ -19,8 +19,10 @@ function PostForm({post = null}){
   const userData = useSelector(state => state.auth.userData)
 
   const submit = async (data) => {
+    console.log("USER DATA:", userData)
+
     if(post) {
-      const file = data.image[0] ? appwriteService.uploadFile(data.image[0]) : null
+      const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null
 
       if(file){
         appwriteService.deleteFile(post.featuredImage)
@@ -48,17 +50,16 @@ function PostForm({post = null}){
       }
     }
   }
+const slugTransform = useCallback((value) => {
+  if (value && typeof value === "string")
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-zA-Z0-9]+/g, "-")   // replace invalid chars
+      .replace(/^-+|-+$/g, "");        // remove starting/ending hyphen
 
-  const slugTransform = useCallback((value) => {
-    if (value && typeof value === 'string')
-      return value
-        .trim()
-        .toLowerCase()
-        .replace(/^[a-zA-Z\d\s]+/g, '-')
-        .replace(/\s/g, '-')
-
-        return ''
-  }, [])
+  return "";
+}, []);
 
   React.useEffect(() => {
     const subscription = watch((value, {name}) => {
